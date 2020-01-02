@@ -1,0 +1,77 @@
+移动硬盘挂载问题
+A1：sudo apt-get install exfat-fuse exfat-utils
+失败
+A2：然后我试图在ubuntu下将移动硬盘格式化，报错：
+Device'/dev/sdb'is not mounted (udisks-error-quark,7)//硬盘未挂载
+A3：lsblk//显示设备信息
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+loop0    7:0    0   3.7M  1 loop /snap/gnome-system-monitor/100
+loop1    7:1    0   3.7M  1 loop /snap/gnome-system-monitor/111
+loop2    7:2    0  44.2M  1 loop /snap/gtk-common-themes/1353
+loop3    7:3    0     4M  1 loop /snap/gnome-calculator/406
+loop4    7:4    0 149.9M  1 loop /snap/gnome-3-28-1804/67
+loop5    7:5    0   956K  1 loop /snap/gnome-logs/81
+loop6    7:6    0  89.1M  1 loop /snap/core/8039
+loop7    7:7    0  54.4M  1 loop /snap/core18/1066
+loop8    7:8    0  14.8M  1 loop /snap/gnome-characters/296
+loop9    7:9    0  42.8M  1 loop /snap/gtk-common-themes/1313
+loop10   7:10   0   4.2M  1 loop /snap/gnome-calculator/544
+loop11   7:11   0  1008K  1 loop /snap/gnome-logs/61
+loop12   7:12   0 156.7M  1 loop /snap/gnome-3-28-1804/110
+loop13   7:13   0  54.5M  1 loop /snap/core18/1265
+loop14   7:14   0  89.1M  1 loop /snap/core/8213
+loop15   7:15   0  14.8M  1 loop /snap/gnome-characters/367
+sda      8:0    0 119.2G  0 disk 
+├─sda1   8:1    0   300M  0 part /boot/efi
+├─sda2   8:2    0   128M  0 part 
+├─sda3   8:3    0    50G  0 part 
+├─sda4   8:4    0  22.3G  0 part 
+└─sda5   8:5    0  46.5G  0 part /
+sdb      8:16   0 465.8G  0 disk /media/mei/Ubuntu 14.04.6 LTS amd64
+然后：sudo mount /dev/sda /pan     将设备/dev/sda挂载到文件夹/pan下
+报错：mount: /pan: mount point does not exist. 挂载点不存在
+报错：mount: /opt: /dev/sda already mounted or mount point busy.
+A4:修复  sudo ntfsfix /dev/sda
+报错：
+Mounting volume... NTFS signature is missing.
+FAILED
+Attempting to correct errors... NTFS signature is missing.
+FAILED
+Failed to startup volume: Invalid argument
+NTFS signature is missing.
+Trying the alternate boot sector
+Unrecoverable error
+Volume is corrupt. You should run chkdsk.
+A5:
+下载ntfs-3g软件：	
+yum install ntfs* -y////报错：yum下无仓库
+挂在ntfs硬盘：
+[root@iZ28wzpkmmqZ ~]# mount -t ntfs-3g /dev/xvdb1 /opt/
+ 
+NTFS signature is missing.
+Failed to mount '/dev/xvdb1': Invalid argument
+The device '/dev/xvdb1' doesn't seem to have a valid NTFS.
+Maybe the wrong device is used? Or the whole disk instead of a
+partition (e.g. /dev/sda, not /dev/sda1)? Or the other way around?
+
+
+提示硬盘错误，修复一下：
+[root@iZ28wzpkmmqZ ~]# ntfsfix /dev/xvdb1
+ 
+Mounting volume... NTFS signature is missing.
+FAILED
+Attempting to correct errors... NTFS signature is missing.
+FAILED
+Failed to startup volume: Invalid argument
+NTFS signature is missing.
+Trying the alternate boot sector
+Unrecoverable error
+Volume is corrupt. You should run chkdsk.
+
+磁盘还是错误，错误提示建议用chkdsk修复：////////已经在win下修复过，然而没用
+
+因为硬盘是别人在阿里云上打的快照然后发给我的，我也没在windows上测试是否正常。现在不得不把这块硬盘挂到windows上了，检查果然有问题，然后修复了一下。
+
+重新挂到linux下，正常。
+A6：sudo apt-get install cifs-utils/////////////gg
+
